@@ -78,8 +78,8 @@ func doReduce(
 		}
 		sort.Strings(keys)
 
-		fileResult := mergeName(jobName, reduceTask)
-		out, err := os.Open(fileResult)
+		out, err := os.Create(outFile)
+		defer out.Close()
 		if err != nil {
 			fmt.Println(err)
 			return

@@ -2,8 +2,12 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"mapreduce"
 	"os"
+	"strconv"
+	"strings"
+	"unicode"
 )
 
 //
@@ -15,6 +19,14 @@ import (
 //
 func mapF(filename string, contents string) []mapreduce.KeyValue {
 	// Your code here (Part II).
+	notALetter := func(c rune) bool { return !unicode.IsLetter(c) }
+	allWords := strings.FieldsFunc(contents, notALetter)
+
+	var kvs []mapreduce.KeyValue
+	for _, k := range allWords {
+		kvs = append(kvs, mapreduce.KeyValue{k, "1"})
+	}
+	return kvs
 }
 
 //
@@ -24,8 +36,18 @@ func mapF(filename string, contents string) []mapreduce.KeyValue {
 //
 func reduceF(key string, values []string) string {
 	// Your code here (Part II).
+	sum := 0
+	for _, v := range values {
+		i, err := strconv.Atoi(v)
+		if err != nil {
+			log.Fatal("Unable to convert ", v, " to int")
+		}
+		sum += i
+	}
+	return strconv.Itoa(sum)
 }
 
+//
 // Can be run in 3 ways:
 // 1) Sequential (e.g., go run wc.go master sequential x1.txt .. xN.txt)
 // 2) Master (e.g., go run wc.go master localhost:7777 x1.txt .. xN.txt)
